@@ -1,7 +1,7 @@
 # 🛒 E-Commerce Analytics: Customer Segmentation & Recommendation System
 
 ## 📌 Context & Background
-**This project is an adapted version of a commercial solution I originally developed for a freelance client in the retail sector.** While the proprietary data and specific business rules have been removed to comply with NDA, the **architectural logic, analytical pipeline, and algorithmic approach** mirror the production environment. I have adapted the code to run on a public dataset (~540,000 transaction records) to demonstrate how I solve real-world business problems—specifically optimizing marketing spend through segmentation and increasing average order value (AOV) via cross-selling analysis.
+**This project is an adapted version of a commercial solution I originally developed for a freelance client in the retail sector.** While the proprietary data and specific business rules have been removed to comply with NDA, the **architectural logic, analytical pipeline, and algorithmic approach** mirror the production environment. I have adapted the code to run on a public dataset (~540,000 transaction records) to demonstrate how I solve real-world business problems-specifically optimizing marketing spend through segmentation and increasing average order value (AOV) via cross-selling analysis.
 
 ---
 

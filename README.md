@@ -1,49 +1,36 @@
-# 🛒 E-Commerce Analytics: Customer Segmentation & Recommendation System
+# E-Commerce Customer Segmentation & Product Association Analysis
 
-## 📌 Context & Background
-**This project is an adapted version of a commercial solution I originally developed for a freelance client in the retail sector.** While the proprietary data and specific business rules have been removed to comply with NDA, the **architectural logic, analytical pipeline, and algorithmic approach** mirror the production environment. I have adapted the code to run on a public dataset (~540,000 transaction records) to demonstrate how I solve real-world business problems-specifically optimizing marketing spend through segmentation and increasing average order value (AOV) via cross-selling analysis.
+## About this project
+This is a personal project built on a public e-commerce transactions dataset (~540,000 records). I wanted to practice two things that come up a lot in real analytics work: grouping customers by behavior (RFM segmentation) and finding which products tend to sell together (market basket analysis).
 
----
+## What I was trying to answer
+1. **Which customers matter most, and which are slipping away?** — group customers into segments (loyal, at-risk, new) so marketing effort can be targeted instead of blasted at everyone.
+2. **What products go together?** — find item associations that could support a "customers also bought" type recommendation.
 
-## 💼 Business Goal
-The primary objective is to transform raw transactional logs into actionable business insights. The analysis focuses on two key areas:
-1.  **Customer Retention:** Identifying distinct customer groups (VIPs, At-Risk, New) to tailor marketing communication.
-2.  **Cross-Selling:** Discovering product associations to build a "Frequently Bought Together" recommendation engine.
+## Tech stack
+- **Storage:** SQLite — loaded the raw CSV into a local database instead of keeping everything in memory, mainly to practice writing SQL against a larger dataset.
+- **Data manipulation:** Python, Pandas, NumPy
+- **Modeling:** scikit-learn (K-Means), mlxtend (FP-Growth / association rules)
+- **Visualization:** Seaborn, Matplotlib
 
----
+## What I did
 
-## 🛠 Tech Stack
-* **Data Storage:** SQLite (simulating a Data Warehouse environment).
-* **ETL & Manipulation:** Python, Pandas, NumPy.
-* **Machine Learning:** Scikit-learn (K-Means Clustering), Mlxtend (FP-Growth, Association Rules).
-* **Visualization:** Seaborn, Matplotlib.
+### 1. ETL into SQLite
+Loaded the ~500K raw rows into SQLite and did cleaning, type casting, and initial aggregation with SQL queries rather than pure Pandas — wanted the practice writing SQL against something bigger than a toy table.
 
----
+### 2. RFM + K-Means segmentation
+Calculated Recency, Frequency, and Monetary value per customer, scaled the features with `StandardScaler` (K-Means is distance-based, so unscaled monetary values would have dominated), and clustered customers into 4 groups.
 
-## 📊 Key Features & Methodology
+A couple of the clusters were easy to interpret:
+- One group had high frequency and recent activity — clear loyalty-program candidates.
+- Another had high historical spend but long inactivity — worth a re-engagement campaign before they're gone for good.
 
-### 1. SQL-Based ETL Pipeline
-Instead of processing everything in-memory, raw CSV data (500k+ rows) is loaded into a **SQLite database**. Data cleaning, type casting, and initial aggregations are performed via complex SQL queries to simulate a scalable data engineering workflow.
+### 3. Market basket analysis
+Used FP-Growth to mine frequent itemsets and generate association rules, evaluated with lift and confidence, to see which products tend to be bought together.
 
-### 2. Customer Segmentation (RFM + K-Means)
-I implemented **RFM Analysis** (Recency, Frequency, Monetary) to quantify customer behavior. 
-* **Standardization:** Data was normalized using `StandardScaler`.
-* **Clustering:** Applied **K-Means** to group customers into 4 distinct clusters.
+## Visualizations
+`figure_kmeans.png` — customer clusters plotted by frequency vs. monetary value
+`figure_sells_clients.png` — monthly sales volume and active client growth over time
 
-> **Insight Example:** > * *Cluster 3 (Loyalists):* High frequency, recent activity. Strategy: Loyalty programs.
-> * *Cluster 1 (At-Risk):* High historical spend but high inactivity days. Strategy: Re-engagement campaigns.
-
-### 3. Market Basket Analysis (Association Rules)
-Used the **FP-Growth algorithm** to mine frequent itemsets and generate association rules.
-* **Metric:** Lift & Confidence.
-* **Outcome:** Identified strong relationships between items.
-
----
-
-## 📈 Visualizations
-*(Note: Add your screenshots here. For example:)*
-
-| Segmentation Clusters | Sales Trend Analysis |
-|:---------------------:|:--------------------:|
-| ![Clusters](images/figure_kmeans.png) | ![Sales](images/figure_sells_clients.png) |
-| *Visualizing customer groups based on Frequency vs. Monetary value* | *Monthly sales volume and active client growth* |
+## What I'd do differently next time
+Try DBSCAN or hierarchical clustering as a comparison to K-Means, since K-Means forces a fixed number of clusters and I picked 4 somewhat arbitrarily using the elbow method. Would also like to validate the association rules against a holdout period instead of the full dataset.
